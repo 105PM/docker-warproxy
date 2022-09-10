@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv bash
+cd /wgcf
+
+if [ "${WARP_ENABLED}" = "true" ]; then
+  if [ ! -e "/wgcf/wgcf-account.toml" ]; then
+    wgcf register --accept-tos
+    chown abc:abc wgcf-account.toml
+  fi
+
+  if [ ! -e "/wgcf/wgcf-profile.conf" ]; then
+    wgcf generate
+    chown abc:abc wgcf-profile.conf
+  fi
+
+  cp /wgcf/wgcf-profile.conf /etc/wireguard/wgcf.conf
+  DEFAULT_GATEWAY_NETWORK_CARD_NAME=`route  | grep default  | awk '{print $8}' | head -1`
+  DEFAULT_ROUTE_IP=`ifconfig $DEFAULT_GATEWAY_NETWORK_CARD_NAME | grep "inet " | awk '{print $2}' | sed "s/addr://"`
+
+  sed -i "/\[Interface\]/a PostDown = ip rule delete from $DEFAULT_ROUTE_IP  lookup main" /etc/wireguard/wgcf.conf
+  sed -i "/\[Interface\]/a PostUp = ip rule add from $DEFAULT_ROUTE_IP lookup main" /etc/wireguard/wgcf.conf
+
+  modprobe ip6table_raw  
+  echo "*** wgcf ready! ***"
+fi

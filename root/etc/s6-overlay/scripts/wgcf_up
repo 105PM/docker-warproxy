@@ -1,0 +1,14 @@
+#!/usr/bin/with-contenv bash
+
+if [ "${WARP_ENABLED}" = "true" ]; then
+    wg-quick up wgcf
+    
+    while ! curl -s -o /dev/null --max-time 2 ipinfo.io ; do
+    wg-quick down wgcf
+    echo "Sleep 2 and retry again."
+    sleep 2
+    wg-quick up wgcf
+    done
+
+    echo "*** warp is running! ***"
+fi
