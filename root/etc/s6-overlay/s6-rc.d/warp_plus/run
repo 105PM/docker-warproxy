@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv bash
+
+if [ "${WARP_PLUS}" != "true" ]; then
+    s6-svc -d .
+    exit 0
+fi
+
+command="python3 /etc/s6-overlay/scripts/warp_plus.py${WARP_PLUS_VERBOSE+ -v} run"
+
+echo "*** executing => $command"
+# exec s6-setuidgid abc $command
+exec s6-setuidgid abc $command

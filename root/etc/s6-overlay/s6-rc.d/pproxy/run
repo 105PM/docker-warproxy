@@ -15,4 +15,5 @@ echo "*** executing => $command"
 # exec s6-setuidgid abc $command
 exec s6-setuidgid abc $command | \
    grep -E -v --line-buffered "^http 127\.0\.0\.1\:[[:digit:]]{5} -> ?google\.com\:443$" | \
+   sed -u 's/^/[pproxy] /' | \
    ts '[%Y/%m/%d %H:%M:%S]'

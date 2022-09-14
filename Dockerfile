@@ -1,6 +1,7 @@
 FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy AS base
 
 COPY root/ /
+ADD https://git.io/wgcf.sh /tmp
 
 RUN \
     apt-get update && apt-get install -y \
@@ -9,8 +10,8 @@ RUN \
     wireguard-tools openresolv  kmod \
     moreutils \
     python3 python3-pip --no-install-recommends && \
-    curl -fsSL git.io/wgcf.sh | bash && mkdir -p /wgcf && \
-    pip3 install --no-warn-script-location pproxy[accelerated] && \
+    bash /tmp/wgcf.sh && \
+    pip3 install --no-warn-script-location pproxy[accelerated] toml && \
     echo "**** permissions ****" && \
     chmod a+x \
         /usr/local/bin/* \
