@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 cd /wgcf
 
 if [ "${WARP_ENABLED}" = "true" ]; then
@@ -7,10 +7,6 @@ if [ "${WARP_ENABLED}" = "true" ]; then
     chown abc:abc wgcf-account.toml
   fi
 
-  # if [ ! -e "/wgcf/wgcf-profile.conf" ]; then
-  #   wgcf generate
-  #   chown abc:abc wgcf-profile.conf
-  # fi
   wgcf generate
   chown abc:abc wgcf-profile.conf
 
@@ -21,6 +17,12 @@ if [ "${WARP_ENABLED}" = "true" ]; then
   sed -i "/\[Interface\]/a PostDown = ip rule delete from $DEFAULT_ROUTE_IP  lookup main" /etc/wireguard/wgcf.conf
   sed -i "/\[Interface\]/a PostUp = ip rule add from $DEFAULT_ROUTE_IP lookup main" /etc/wireguard/wgcf.conf
 
-  modprobe ip6table_raw  
+  if [ "${SYNOLOGY}" = "true" ]; then
+    # for synology
+    sed -i 's/AllowedIPs = ::/#AllowedIPs = ::/' /etc/wireguard/wgcf.conf
+    sed -i 's/AllowedIPs = 0.0.0.0\/0/AllowedIPs = 0.0.0.0\/1, 128.0.0.0\/1/' /etc/wireguard/wgcf.conf
+  else
+    modprobe ip6table_raw
+  fi
   echo "*** wgcf ready! ***"
 fi
