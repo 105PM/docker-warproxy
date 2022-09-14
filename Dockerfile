@@ -34,7 +34,7 @@ EXPOSE ${PROXY_PORT}
 VOLUME /wgcf
 WORKDIR /wgcf
 
-HEALTHCHECK --interval=10m --timeout=30s --start-period=10s --retries=3 \
-    CMD /usr/local/bin/healthcheck
+HEALTHCHECK --interval=30s --timeout=30s --start-period=1m \
+    CMD /usr/local/bin/healthcheck || kill 1
 
 ENTRYPOINT ["/init"]
