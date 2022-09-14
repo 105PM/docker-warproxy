@@ -1,4 +1,4 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy AS base
+FROM ghcr.io/linuxserver/baseimage-ubuntu:focal AS base
 
 COPY root/ /
 ADD https://git.io/wgcf.sh /tmp
