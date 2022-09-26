@@ -58,7 +58,5 @@ jobs:
           file: Dockerfile
           tags: |
             ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ env.VER_FULL }}
-            ${{ env.IMAGE_NAME }}:${{ env.VER_MAJOR }}
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
