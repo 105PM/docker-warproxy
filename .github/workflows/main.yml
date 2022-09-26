@@ -1,0 +1,62 @@
+name: buildx
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+
+env:
+  IMAGE_NAME: ghcr.io/105pm/docker-warproxy
+
+jobs:
+  buildx:
+    runs-on: ubuntu-20.04
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Buildx
+        uses: docker/setup-buildx-action@v2
+      - 
+        name: Initial Buildx
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: Dockerfile
+          tags: ${{ env.IMAGE_NAME }}:testing
+          platforms: linux/amd64,linux/arm/v7,linux/arm64
+      - 
+        name: Load Built Image and Test
+        run: |
+          docker buildx build \
+            -t ${{ env.IMAGE_NAME }}:testing \
+            --platform=linux/amd64 \
+            --load \
+            .
+          CID=$(docker run -d ${{ env.IMAGE_NAME }}:testing)
+          sleep 5s
+          if [ $(docker exec -i $CID wireproxy --help | head -1 | cut -d ' ' -f2) != "wireproxy" ]; then          
+            exit 1
+          fi
+      -
+        name: Login to ghcr.io
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - 
+        name: Buildx and Push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: Dockerfile
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+          platforms: linux/amd64,linux/arm/v7,linux/arm64
+          push: true
