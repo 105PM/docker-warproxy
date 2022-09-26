@@ -14,5 +14,5 @@ until [ "$(curl --retry 10 --retry-connrefused --retry-delay 5 -ks https://www.c
     s6-svwait -u /run/service/wireproxy
 done
 
-echo "*** Warp Mode: $(curl -ks https://www.cloudflare.com/cdn-cgi/trace -x socks5://127.0.0.1:8080 | grep warp | sed 's/warp=//g') ***"
-echo "*** Warp is running! ***"
+echo "*** WARP Mode: $(curl -ks https://www.cloudflare.com/cdn-cgi/trace -x socks5://127.0.0.1:8080 | grep warp | sed 's/warp=//g') ***"
+echo "*** WARP is running! ***"

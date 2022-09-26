@@ -100,9 +100,9 @@ def updatekey():
 	req.get_method = lambda: 'PATCH'
 	response = urllib.request.urlopen(req)
 	if response.getcode() == 200:
-		logger.info('Private Key Update Complete')
+		logger.info('Update Device Info...')
 	else:
-		logger.error(f'Private Key Update Failed: {response.getcode()}')
+		logger.error(f'Update Failed: {response.getcode()}')
 
 def checkmode():
 	req = urllib.request.Request('https://www.cloudflare.com/cdn-cgi/trace')

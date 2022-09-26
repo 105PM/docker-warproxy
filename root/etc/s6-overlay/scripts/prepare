@@ -18,5 +18,5 @@ if [ "${WARP_ENABLED}" = "true" ]; then
     chown abc:abc /config/wireproxy.conf
   fi
 
-  echo "**** wireproxy ready! ****"
+  echo "**** config files are ready! ****"
 fi
