@@ -26,7 +26,7 @@ parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(title='commands', dest='commands')
 run_parser = subparsers.add_parser('run', help='Get WARP+ Quota')
 update_parser = subparsers.add_parser('update', help='Update Private Key')
-parser.add_argument("--config", dest="config", default="/wgcf/wgcf-account.toml", help="Set wgcf-account.toml location")
+parser.add_argument("--config", dest="config", default="/config/wgcf-account.toml", help="Set wgcf-account.toml location")
 parser.add_argument("-v", "--verbose", dest="verbose", action='store_true', help="Verbose")
 args = parser.parse_args()
 
@@ -79,9 +79,9 @@ def getquota():
 		result = run()
 		if result == 200:
 			logger.info(f'WARP+ 1GB added!')
-			time.sleep(30)
+			time.sleep(60)
 		else:
-			logger.info(f'WARP+ Fail!')
+			logger.error(f'WARP+ Fail!')
 
 def updatekey():
 	with open(args.config) as f:

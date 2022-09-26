@@ -8,5 +8,4 @@ fi
 command="python3 /etc/s6-overlay/scripts/warp_plus.py${WARP_PLUS_VERBOSE+ -v} run"
 
 echo "*** executing => $command"
-# exec s6-setuidgid abc $command
 exec s6-setuidgid abc $command

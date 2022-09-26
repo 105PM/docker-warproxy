@@ -1,26 +1,49 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal AS base
+FROM golang:1.18 as build
+RUN \
+    echo "**** build wireproxy ****" && \
+    git clone https://github.com/octeep/wireproxy /tmp/wireproxy && \
+    cd /tmp/wireproxy && \
+    CGO_ENABLED=0 go build ./cmd/wireproxy
 
+FROM ghcr.io/linuxserver/baseimage-alpine:3.16 AS base
+
+COPY --from=build /tmp/wireproxy/wireproxy /usr/bin/wireproxy
 COPY root/ /
-ADD https://git.io/wgcf.sh /tmp
 
 RUN \
-    apt-get update && apt-get install -y \
-    curl ca-certificates \
-    iproute2 net-tools iptables \
-    wireguard-tools openresolv  kmod \
-    moreutils \
-    python3 python3-pip --no-install-recommends && \
-    bash /tmp/wgcf.sh && \
-    pip3 install --no-warn-script-location pproxy[accelerated] toml && \
+    echo "**** install frolvlad/alpine-python3 ****" && \
+    apk add --no-cache python3 && \
+    if [ ! -e /usr/bin/python ]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
+    python3 -m ensurepip && \
+    rm -r /usr/lib/python*/ensurepip && \
+    pip3 install --no-cache --upgrade pip setuptools wheel && \
+    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip; fi && \
+    echo "**** install wgcf ****" && \
+    curl -fsSL git.io/wgcf.sh | bash && mkdir -p /wgcf && \
+    echo "**** install python-proxy ****" && \
+    apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+        py3-pycryptodome \
+        py3-uvloop \
+        && \
+    pip3 install pproxy[accelerated] \
+                toml && \
+    echo "**** install others ****" && \
+    apk add --no-cache \
+        wireguard-tools \
+        grep \
+        moreutils \
+        sed \
+        && \
     echo "**** permissions ****" && \
     chmod a+x \
         /usr/local/bin/* \
         /etc/s6-overlay/scripts/* && \
     echo "**** cleanup ****" && \
     rm -rf \
-      /var/lib/apt/lists/* \
-      /tmp/* \
-      /root/.cache
+        /tmp/* \
+        /root/.cache
+
+
 
 ENV \
     S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
@@ -31,10 +54,10 @@ ENV \
     PROXY_PORT=8008
 
 EXPOSE ${PROXY_PORT}
-VOLUME /wgcf
-WORKDIR /wgcf
+VOLUME /config
+WORKDIR /config
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=1m \
-    CMD /usr/local/bin/healthcheck || kill 1
+HEALTHCHECK --interval=10m --timeout=30s --start-period=10s --retries=3 \
+    CMD /usr/local/bin/healthcheck
 
 ENTRYPOINT ["/init"]

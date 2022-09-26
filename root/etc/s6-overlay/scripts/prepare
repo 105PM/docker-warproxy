@@ -1,0 +1,21 @@
+#!/command/with-contenv bash
+
+if [ "${WARP_ENABLED}" = "true" ]; then
+  if [ ! -e "/config/wgcf-account.toml" ]; then
+    wgcf register --accept-tos --config /config/wgcf-account.toml
+    chown abc:abc /config/wgcf-account.toml
+  fi
+
+  if [ ! -e "/config/wgcf-profile.conf" ]; then
+    wgcf generate --config /config/wgcf-account.toml --profile /config/wgcf-profile.conf
+    chown abc:abc /config/wgcf-profile.conf
+  fi
+
+  if [ ! -e "/config/wireproxy.conf" ]; then
+    cp /config/wgcf-profile.conf /config/wireproxy.conf
+    echo -e "\n[Socks5]\nBindAddress = 127.0.0.1:8080" >> /config/wireproxy.conf
+    chown abc:abc /config/wireproxy.conf
+  fi
+
+  echo "**** wireproxy ready! ****"
+fi

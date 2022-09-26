@@ -41,4 +41,4 @@ services:
 | ```PROXY_AUTHTIME```  | re-auth time interval for same ip (second in string format)  | ```0``` |
 | ```WARP_ENABLED```  | set ```false``` to disable cloudflare WARP  | ```true``` |
 | ```WARP_PLUS```  | set ```true``` to enable WARP+ quota script  | ```false``` |
-| ```WARP_PLUS_VERBOSE```  | set ```true``` to run WARP+ quota script in verbose mode   | ```8080```  |
+| ```WARP_PLUS_VERBOSE```  | set ```true``` to run WARP+ quota script in verbose mode   | ```false```  |

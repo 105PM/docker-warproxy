@@ -1,0 +1,20 @@
+#!/command/with-contenv bash
+
+if [ "${WARP_PLUS}" != "true" ]; then
+    s6-svc -d .
+    exit 0
+fi
+
+if [ "${WARP_PLUS}" = "true" ]; then
+    sleep 5
+    while [ "$(curl -ks https://www.cloudflare.com/cdn-cgi/trace -x socks5://127.0.0.1:8080 | grep warp | sed 's/warp=//g')" != "plus" ] ; do
+        echo "Wait 10s for WARP+ ready..."
+        python3 /etc/s6-overlay/scripts/warp_plus.py -v update
+        sleep 10
+        s6-svc -r /run/service/wireproxy
+        sleep 10
+    done
+fi
+
+echo "*** Warp Mode: $(curl -ks https://www.cloudflare.com/cdn-cgi/trace -x socks5://127.0.0.1:8080 | grep warp | sed 's/warp=//g') ***"
+echo "*** Warp is running! ***"

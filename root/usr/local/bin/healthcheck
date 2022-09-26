@@ -12,8 +12,8 @@ if [ "${PROXY_ENABLED}" = "true" ]; then
     fi
 
     /usr/bin/curl --silent --fail -o /dev/null --proxy "${PROXY_URL}" "${TEST_URL}" || exit 1
-else
-    /usr/bin/curl --silent --fail -o /dev/null "${TEST_URL}" || exit 1
+elif [ "${WARP_ENABLED}" == "true" ]; then
+    /usr/bin/curl --silent --fail -o /dev/null --proxy "socks5://127.0.0.1:8080" "${TEST_URL}" || exit 1
 fi
 
 exit 0
