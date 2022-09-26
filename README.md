@@ -9,7 +9,7 @@ version: "3"
 services:
   warproxy:
     container_name: docker-warproxy
-    image: docker-warp:testing
+    image: ghcr.io/105pm/docker-warproxy:latest
     network_mode: bridge
     restart: always
     volumes:
