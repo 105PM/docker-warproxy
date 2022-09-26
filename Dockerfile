@@ -43,7 +43,8 @@ RUN echo "**** permissions ****" && \
 ## RELEASE
 
 FROM base
-
+LABEL maintainer="105PM"
+LABEL org.opencontainers.image.source https://github.com/105PM/docker-warproxy
 
 
 RUN \
