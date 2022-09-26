@@ -88,16 +88,14 @@ def updatekey():
 		conf_data = toml.load(f)
 		device_id = conf_data['device_id']
 		access_token = conf_data['access_token']
-		private_key = conf_data['private_key']
 
-	pubkey = subprocess.run(['wg', 'pubkey'], input=private_key, capture_output=True, text=True).stdout.strip()
 	headers = {'Content-Type': 'application/json; charset=UTF-8',
 				'Host': 'api.cloudflareclient.com',
 				'User-Agent': 'okhttp/3.12.1',
 				'authorization': f'Bearer {access_token}'
 				}
 	
-	data = json.dumps({'key': pubkey}).encode('utf8')
+	data = None
 	req = urllib.request.Request(f'{url}/{device_id}', data, headers)
 	req.get_method = lambda: 'PATCH'
 	response = urllib.request.urlopen(req)

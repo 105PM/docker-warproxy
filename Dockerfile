@@ -29,7 +29,6 @@ RUN \
                 toml && \
     echo "**** install others ****" && \
     apk add --no-cache \
-        wireguard-tools \
         grep \
         moreutils \
         sed \
