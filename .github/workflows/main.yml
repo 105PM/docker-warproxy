@@ -7,7 +7,7 @@ on:
       - 'main'
 
 env:
-  IMAGE_NAME: ghcr.io/105PM/docker-warproxy
+  IMAGE_NAME: ghcr.io/105pm/docker-warproxy
 
 jobs:
   buildx:
