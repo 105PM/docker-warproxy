@@ -1,4 +1,4 @@
-ARG ALPINE_VER=3.16
+ARG ALPINE_VER=3.17
 
 ## BUILD WIREPROXY
 FROM golang:1.18 as builder
@@ -49,7 +49,7 @@ LABEL org.opencontainers.image.source https://github.com/105PM/docker-warproxy
 
 RUN \
     echo "**** install python-proxy ****" && \
-    apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    apk add --no-cache \
         py3-pycryptodome \
         py3-uvloop \
         && \
