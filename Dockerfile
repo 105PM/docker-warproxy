@@ -12,8 +12,6 @@ RUN \
 
 FROM ghcr.io/linuxserver/baseimage-alpine:${ALPINE_VER} AS base
 
-ADD https://git.io/wgcf.sh /tmp/wgcf.sh
-
 RUN \
     echo "**** install frolvlad/alpine-python3 ****" && \
     apk add --no-cache python3 && \
@@ -23,7 +21,7 @@ RUN \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
     if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip; fi && \
     echo "**** install wgcf ****" && \
-    bash /tmp/wgcf.sh && \
+    curl -fsSL https://git.io/wgcf.sh | bash && \
     echo "**** cleanup ****" && \
     rm -rf \
         /tmp/* \
