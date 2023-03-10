@@ -37,7 +37,7 @@ COPY root/ /bar
 
 RUN echo "**** permissions ****" && \
     chmod a+x \
-        /usr/local/bin/* \
+        /bar/usr/local/bin/* \
         /bar/etc/s6-overlay/scripts/*
 
 ## RELEASE
