@@ -1,4 +1,4 @@
-#!/command/with-contenv bash
+#!/usr/bin/with-contenv bash
 
 if [ "${WARP_PLUS}" != "true" ] || [ "${WARP_ENABLED}" != "true" ]; then
     exit 0
