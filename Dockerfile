@@ -1,12 +1,10 @@
 ARG ALPINE_VER=3.17
 
 ## BUILD WIREPROXY
-FROM golang:1.18 as builder
+FROM golang:1.19-alpine${ALPINE_VER} AS builder
 RUN \
     echo "**** build wireproxy ****" && \
-    git clone https://github.com/octeep/wireproxy /tmp/wireproxy && \
-    cd /tmp/wireproxy && \
-    CGO_ENABLED=0 go build ./cmd/wireproxy
+    go install github.com/octeep/wireproxy/cmd/wireproxy@latest
 
 ## ALPINE BASE WITH PYTHON3
 
@@ -30,7 +28,7 @@ RUN \
 
 FROM base AS collector
 
-COPY --from=builder /tmp/wireproxy/wireproxy /bar/usr/bin/wireproxy
+COPY --from=builder /go/bin/wireproxy /bar/usr/local/bin/wireproxy
 COPY root/ /bar
 
 RUN echo "**** permissions ****" && \
