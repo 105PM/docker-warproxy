@@ -2,21 +2,26 @@
 
 if [ "${WARP_ENABLED}" = "true" ]; then
   if [ ! -e "/config/wgcf-account.toml" ]; then
+    echo "*** wgcf: registering a new account..."
     wgcf register --accept-tos --config /config/wgcf-account.toml
-    chown abc:abc /config/wgcf-account.toml
+  else
+    echo "*** wgcf: updating account info..."
+    wgcf update --config /config/wgcf-account.toml
   fi
 
   if [ ! -e "/config/wgcf-profile.conf" ]; then
-    wgcf update --config /config/wgcf-account.toml
+    echo "*** wgcf: generating a new wireguard profile..."
     wgcf generate --config /config/wgcf-account.toml --profile /config/wgcf-profile.conf
-    chown abc:abc /config/wgcf-profile.conf
   fi
 
   if [ ! -e "/config/wireproxy.conf" ]; then
     cp /config/wgcf-profile.conf /config/wireproxy.conf
     echo -e "\n[Socks5]\nBindAddress = 127.0.0.1:8080" >> /config/wireproxy.conf
-    chown abc:abc /config/wireproxy.conf
   fi
 
-  echo "**** config files are ready! ****"
+  echo "*** config files are ready! ***"
 fi
+
+# permissions
+chown -R abc:abc \
+  /config
