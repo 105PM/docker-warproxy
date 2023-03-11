@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-if [ "${WARP_PLUS}" != "true" ]; then
+if [ "${WARP_ENABLED}" != "true" ] || [ "${WARP_PLUS}" != "true" ]; then
     s6-svc -d .
     exit 0
 fi
