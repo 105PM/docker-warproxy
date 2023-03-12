@@ -78,7 +78,7 @@ EXPOSE ${PROXY_PORT}
 VOLUME /config
 WORKDIR /config
 
-HEALTHCHECK --interval=10m --timeout=30s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=5m --timeout=30s --start-period=2m --retries=3 \
     CMD /usr/local/bin/healthcheck
 
 ENTRYPOINT ["/init"]
