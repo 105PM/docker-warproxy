@@ -34,7 +34,9 @@ COPY root/ /bar
 RUN echo "**** permissions ****" && \
     chmod a+x \
         /bar/usr/local/bin/* \
-        /bar/etc/s6-overlay/s6-rc.d/*/run
+        /bar/etc/s6-overlay/s6-rc.d/*/run \
+        /bar/etc/s6-overlay/s6-rc.d/*/finish \
+        /bar/etc/s6-overlay/s6-rc.d/*/data/*
 
 ## RELEASE
 

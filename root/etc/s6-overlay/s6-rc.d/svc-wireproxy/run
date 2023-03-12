@@ -7,10 +7,9 @@ fi
 
 command="/usr/local/bin/wireproxy -c /config/wireproxy.conf"
 
-echo "*** executing => $command"
-# exec s6-setuidgid abc $command
-
-exec s6-setuidgid abc $command | \
+# echo "*** executing => $command"
+exec s6-notifyoncheck -d -n 300 -w 10000 \
+    s6-setuidgid abc $command | \
     grep -E -v --line-buffered "^DEBUG:" | \
     sed -u 's/^/[WIREPROXY] /' | \
     ts '[%Y/%m/%d %H:%M:%S]'

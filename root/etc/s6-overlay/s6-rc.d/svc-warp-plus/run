@@ -1,11 +1,19 @@
 #!/usr/bin/with-contenv bash
 
-if [ "${WARP_ENABLED}" != "true" ] || [ "${WARP_PLUS}" != "true" ]; then
+if [ "${WARP_PLUS}" != "true" ]; then
     s6-svc -d .
     exit 0
 fi
 
+if [ "${WARP_ENABLED}" != "true" ]; then
+    s6-svc -d .
+    exit 0
+else
+    s6-svwait -U /run/service/svc-wireproxy
+fi
+
 command="warp-plus${WARP_PLUS_VERBOSE+ -v} run"
 
-echo "*** executing => $command"
-exec s6-setuidgid abc $command
+# echo "*** executing => $command"
+exec s6-notifyoncheck -d -n 300 -s 3000 -w 10000 \
+    s6-setuidgid abc $command

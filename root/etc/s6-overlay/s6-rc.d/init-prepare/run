@@ -19,7 +19,11 @@ if [ "${WARP_ENABLED}" = "true" ]; then
     echo -e "\n[Socks5]\nBindAddress = 127.0.0.1:8080" >> /config/wireproxy.conf
   fi
 
-  echo "*** config files are ready! ***"
+  [ "${WARP_PLUS}" = "true" ] || \
+    rm -f /var/run/service/svc-warp-plus/notification-fd
+else
+  rm -f /var/run/service/svc-wireproxy/notification-fd
+  rm -f /var/run/service/svc-warp-plus/notification-fd
 fi
 
 # permissions
