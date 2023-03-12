@@ -1,6 +1,7 @@
 #!/usr/bin/with-contenv bash
 
 WARP_MODE="$(curl -ks https://www.cloudflare.com/cdn-cgi/trace -x socks5://127.0.0.1:8080 | grep warp | sed 's/warp=//g')"
+[ -n "${WARP_MODE:-}" ] || exit 1
 printf $WARP_MODE > /var/run/s6/container_environment/WARP_MODE
 
 if [ "${WARP_MODE}" = "on" ] || [ "${WARP_MODE}" = "plus" ]; then

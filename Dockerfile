@@ -29,7 +29,7 @@ RUN \
 FROM base AS collector
 
 COPY --from=builder /go/bin/wireproxy /bar/usr/local/bin/wireproxy
-COPY root/ /bar
+COPY root/ /bar/
 
 RUN echo "**** permissions ****" && \
     chmod a+x \
