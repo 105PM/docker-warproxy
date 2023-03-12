@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 
 if [ "$WARP_MODE" != "plus" ]; then
-    warp-plus -v update
+    warp+ -v update
 
     s6-svc -wR -r /run/service/svc-wireproxy
     exit 1

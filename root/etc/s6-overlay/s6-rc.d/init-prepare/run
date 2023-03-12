@@ -20,10 +20,10 @@ if [ "${WARP_ENABLED}" = "true" ]; then
   fi
 
   [ "${WARP_PLUS}" = "true" ] || \
-    rm -f /var/run/service/svc-warp-plus/notification-fd
+    rm -f /var/run/service/svc-warp+/notification-fd
 else
   rm -f /var/run/service/svc-wireproxy/notification-fd
-  rm -f /var/run/service/svc-warp-plus/notification-fd
+  rm -f /var/run/service/svc-warp+/notification-fd
 fi
 
 # permissions

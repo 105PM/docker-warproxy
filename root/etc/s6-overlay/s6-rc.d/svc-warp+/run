@@ -12,7 +12,7 @@ else
     s6-svwait -U /run/service/svc-wireproxy
 fi
 
-command="warp-plus${WARP_PLUS_VERBOSE+ -v} run"
+command="warp+${WARP_PLUS_VERBOSE+ -v} run"
 
 # echo "*** executing => $command"
 exec s6-notifyoncheck -d -n 300 -s 3000 -w 10000 \
