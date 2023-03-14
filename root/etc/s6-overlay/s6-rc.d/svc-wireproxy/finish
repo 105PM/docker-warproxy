@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+
+ps -eo pid,args | grep '/usr/local/bin/wireproxy' | \
+    grep -v grep | awk '{print $1}' | xargs -r kill -9

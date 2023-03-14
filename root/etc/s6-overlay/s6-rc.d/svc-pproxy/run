@@ -1,4 +1,4 @@
-#!/command/with-contenv bash
+#!/usr/bin/with-contenv bash
 
 if [ "${PROXY_ENABLED}" != "true" ]; then
     s6-svc -d .
@@ -6,7 +6,7 @@ if [ "${PROXY_ENABLED}" != "true" ]; then
 fi
 
 [ "${WARP_ENABLED}" = "true" ] && \
-    s6-svwait -u /run/service/wireproxy && sleep 1s
+    s6-svwait -u /run/service/svc-wireproxy && sleep 1s
 
 command="pproxy -l http://0.0.0.0:${PROXY_PORT}"
 if [[ -n ${PROXY_USER:-} ]] && [[ -n ${PROXY_PASS:-} ]]; then
@@ -20,6 +20,6 @@ command="$command --auth ${PROXY_AUTHTIME:-0}${PROXY_VERBOSE+ -v}"
 echo "*** executing => $command"
 
 exec s6-setuidgid abc $command | \
-   grep -E -v --line-buffered "^http 127\.0\.0\.1\:[[:digit:]]{5} -> (socks5 127\.0\.0\.1\:8080 -> )?google\.com\:443$" | \
+   grep -E -v --line-buffered "^http 127\.0\.0\.1:[[:digit:]]{5} -> (socks5 127\.0\.0\.1:8080 -> )?google\.com:443$" | \
    sed -u 's/^/[pproxy] /' | \
    ts '[%Y/%m/%d %H:%M:%S]'

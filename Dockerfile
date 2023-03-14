@@ -1,18 +1,14 @@
-ARG ALPINE_VER=3.16
+ARG ALPINE_VER=3.17
 
 ## BUILD WIREPROXY
-FROM golang:1.18 as builder
+FROM golang:1.19-alpine${ALPINE_VER} AS builder
 RUN \
     echo "**** build wireproxy ****" && \
-    git clone https://github.com/octeep/wireproxy /tmp/wireproxy && \
-    cd /tmp/wireproxy && \
-    CGO_ENABLED=0 go build ./cmd/wireproxy
+    go install github.com/octeep/wireproxy/cmd/wireproxy@latest
 
 ## ALPINE BASE WITH PYTHON3
 
 FROM ghcr.io/linuxserver/baseimage-alpine:${ALPINE_VER} AS base
-
-ADD https://git.io/wgcf.sh /tmp/wgcf.sh
 
 RUN \
     echo "**** install frolvlad/alpine-python3 ****" && \
@@ -23,7 +19,7 @@ RUN \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
     if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip; fi && \
     echo "**** install wgcf ****" && \
-    bash /tmp/wgcf.sh && \
+    curl -fsSL https://git.io/wgcf.sh | bash && \
     echo "**** cleanup ****" && \
     rm -rf \
         /tmp/* \
@@ -32,13 +28,15 @@ RUN \
 
 FROM base AS collector
 
-COPY --from=builder /tmp/wireproxy/wireproxy /bar/usr/bin/wireproxy
-COPY root/ /bar
+COPY --from=builder /go/bin/wireproxy /bar/usr/local/bin/wireproxy
+COPY root/ /bar/
 
 RUN echo "**** permissions ****" && \
     chmod a+x \
-        /usr/local/bin/* \
-        /bar/etc/s6-overlay/scripts/*
+        /bar/usr/local/bin/* \
+        /bar/etc/s6-overlay/s6-rc.d/*/run \
+        /bar/etc/s6-overlay/s6-rc.d/*/finish \
+        /bar/etc/s6-overlay/s6-rc.d/*/data/*
 
 ## RELEASE
 
@@ -49,7 +47,7 @@ LABEL org.opencontainers.image.source https://github.com/105PM/docker-warproxy
 
 RUN \
     echo "**** install python-proxy ****" && \
-    apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    apk add --no-cache \
         py3-pycryptodome \
         py3-uvloop \
         && \
@@ -80,7 +78,7 @@ EXPOSE ${PROXY_PORT}
 VOLUME /config
 WORKDIR /config
 
-HEALTHCHECK --interval=10m --timeout=30s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=5m --timeout=30s --start-period=2m --retries=3 \
     CMD /usr/local/bin/healthcheck
 
 ENTRYPOINT ["/init"]
