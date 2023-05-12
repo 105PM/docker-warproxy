@@ -53,43 +53,72 @@ def digitString(stringLength):
 url = f"https://api.cloudflareclient.com/v0a{digitString(3)}/reg"
 
 
+def _run(config: dict, max_retries: int = 0):
+    headers = {
+        "Content-Type": "application/json; charset=UTF-8",
+        "Host": "api.cloudflareclient.com",
+        "Connection": "Keep-Alive",
+        "Accept-Encoding": "gzip",
+        "User-Agent": "okhttp/3.12.1",
+    }
+
+    status_code = None
+    exception = None
+    for retry_num in range(max_retries + 1):
+        if retry_num > 0:
+            sleep_min = min(30, 2**retry_num * 1)
+            logger.info(
+                "Sleeping %d minutes before retry %d of %d for getting quota after %s",
+                sleep_min,
+                retry_num,
+                max_retries,
+                str(exception) if exception else "exception",
+            )
+            time.sleep(sleep_min * 60)
+
+        try:
+            exception = None
+            install_id = genString(22)
+            data = {
+                "key": f"{genString(43)}=",
+                "install_id": install_id,
+                "fcm_token": f"{install_id}:APA91b{genString(134)}",
+                "referrer": config["device_id"],
+                "warp_enabled": False,
+                "tos": datetime.now().isoformat()[:-3] + "+02:00",
+                "type": "Android",
+                "locale": "es_ES",
+            }
+            res = requests.post(url, json=data, headers=headers, timeout=10)
+            status_code = res.status_code
+            res.raise_for_status()
+        except Exception as exc:
+            exception = exc
+            if status_code not in [429, 500, 502, 503, 504, 509]:
+                logger.error(exc)
+                break  # fatal error
+            if retry_num == max_retries:
+                logger.error(exc)
+        else:
+            break  # no error
+
+    return status_code
+
+
 def run():
     with open(args.config, encoding="utf-8") as f:
-        data = toml.load(f)
-        referrer = data["device_id"]
-    try:
-        install_id = genString(22)
-        data = {
-            "key": f"{genString(43)}=",
-            "install_id": install_id,
-            "fcm_token": f"{install_id}:APA91b{genString(134)}",
-            "referrer": referrer,
-            "warp_enabled": False,
-            "tos": datetime.now().isoformat()[:-3] + "+02:00",
-            "type": "Android",
-            "locale": "es_ES",
-        }
-        headers = {
-            "Content-Type": "application/json; charset=UTF-8",
-            "Host": "api.cloudflareclient.com",
-            "Connection": "Keep-Alive",
-            "Accept-Encoding": "gzip",
-            "User-Agent": "okhttp/3.12.1",
-        }
-        res = requests.post(url, json=data, headers=headers, timeout=10)
-        return res.status_code
-    except Exception as error:
-        logger.error(error)
+        conf = toml.load(f)
+    return _run(conf, max_retries=10)
 
 
 def getquota():
     while True:
         result = run()
         if result == 200:
-            logger.info("WARP+ 1GB added!")
-            time.sleep(60)
+            logger.info("Free 1GB added!")
         else:
-            logger.error("WARP+ Fail!")
+            logger.error("Failed to get free quota. Retrying in 60s...")
+        time.sleep(60)
 
 
 def updatekey():
