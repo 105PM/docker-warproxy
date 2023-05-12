@@ -16,7 +16,7 @@ import toml
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 formatter = logging.Formatter(
-    "%(asctime)s [WARP_PLUS] %(message)s", "[%Y/%m/%d %H:%M:%S]"
+    "%(asctime)s [warp+] %(message)s", "%Y/%m/%d %H:%M:%S"
 )
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
@@ -134,9 +134,7 @@ def updatekey():
 
     logger.info("Updating device info...")
     res = requests.patch(f"{url}/{conf['device_id']}", headers=headers, timeout=10)
-    if res.status_code == 200:
-        logger.info("Update OK")
-    else:
+    if res.status_code != 200:
         logger.error("Update Failed: status_code=%d", res.status_code)
 
 
