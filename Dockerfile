@@ -49,10 +49,11 @@ RUN \
     echo "**** install python-proxy ****" && \
     apk add --no-cache \
         py3-pycryptodome \
+        py3-requests \
+        py3-toml \
         py3-uvloop \
         && \
-    pip3 install pproxy[accelerated] \
-                toml && \
+    pip3 install pproxy[accelerated] && \
     echo "**** install others ****" && \
     apk add --no-cache \
         grep \

@@ -1,15 +1,14 @@
 #!/usr/bin/python3
 import argparse
-import json
 import logging
 import random
 import re
 import string
 import sys
 import time
-import urllib.request
 from datetime import datetime
 
+import requests
 import toml
 
 # logger
@@ -42,19 +41,13 @@ args = parser.parse_args()
 
 
 def genString(stringLength):
-    try:
-        letters = string.ascii_letters + string.digits
-        return "".join(random.choice(letters) for _ in range(stringLength))
-    except Exception as error:
-        print(error)
+    letters = string.ascii_letters + string.digits
+    return "".join(random.choice(letters) for _ in range(stringLength))
 
 
 def digitString(stringLength):
-    try:
-        digit = string.digits
-        return "".join((random.choice(digit) for _ in range(stringLength)))
-    except Exception as error:
-        print(error)
+    digit = string.digits
+    return "".join((random.choice(digit) for _ in range(stringLength)))
 
 
 url = f"https://api.cloudflareclient.com/v0a{digitString(3)}/reg"
@@ -66,7 +59,7 @@ def run():
         referrer = data["device_id"]
     try:
         install_id = genString(22)
-        body = {
+        data = {
             "key": f"{genString(43)}=",
             "install_id": install_id,
             "fcm_token": f"{install_id}:APA91b{genString(134)}",
@@ -76,7 +69,6 @@ def run():
             "type": "Android",
             "locale": "es_ES",
         }
-        data = json.dumps(body).encode("utf8")
         headers = {
             "Content-Type": "application/json; charset=UTF-8",
             "Host": "api.cloudflareclient.com",
@@ -84,10 +76,8 @@ def run():
             "Accept-Encoding": "gzip",
             "User-Agent": "okhttp/3.12.1",
         }
-        req = urllib.request.Request(url, data, headers)
-        with urllib.request.urlopen(req) as response:
-            status_code = response.getcode()
-            return status_code
+        res = requests.post(url, json=data, headers=headers, timeout=10)
+        return res.status_code
     except Exception as error:
         logger.error(error)
 
@@ -104,32 +94,27 @@ def getquota():
 
 def updatekey():
     with open(args.config, encoding="utf-8") as f:
-        conf_data = toml.load(f)
-        device_id = conf_data["device_id"]
-        access_token = conf_data["access_token"]
+        conf = toml.load(f)
 
     headers = {
         "Content-Type": "application/json; charset=UTF-8",
         "Host": "api.cloudflareclient.com",
         "User-Agent": "okhttp/3.12.1",
-        "authorization": f"Bearer {access_token}",
+        "authorization": f"Bearer {conf['access_token']}",
     }
 
-    data = None
-    req = urllib.request.Request(f"{url}/{device_id}", data, headers)
-    req.get_method = lambda: "PATCH"
-    with urllib.request.urlopen(req) as response:
-        if response.getcode() == 200:
-            logger.info("Update Device Info...")
-        else:
-            logger.error("Update Failed: %s", response.getcode())
+    logger.info("Updating device info...")
+    res = requests.patch(f"{url}/{conf['device_id']}", headers=headers, timeout=10)
+    if res.status_code == 200:
+        logger.info("Update OK")
+    else:
+        logger.error("Update Failed: status_code=%d", res.status_code)
 
 
 def checkmode():
-    req = urllib.request.Request("https://www.cloudflare.com/cdn-cgi/trace")
-    with urllib.request.urlopen(req) as response:
-        warp_mode = re.search(r"warp=([\w]+)", response.read().decode("utf8")).group(1)
-        return warp_mode
+    res = requests.get("https://www.cloudflare.com/cdn-cgi/trace", timeout=10)
+    warp_mode = re.search(r"warp=([\w]+)", res.text).group(1)
+    return warp_mode
 
 
 if __name__ == "__main__":
