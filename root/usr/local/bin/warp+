@@ -89,7 +89,7 @@ def _run(config: dict, max_retries: int = 0):
                 "type": "Android",
                 "locale": "es_ES",
             }
-            res = requests.post(url, json=data, headers=headers, timeout=10)
+            res = requests.post(url, json=data, headers=headers, timeout=30)
             status_code = res.status_code
             res.raise_for_status()
         except Exception as exc:
@@ -133,13 +133,13 @@ def updatekey():
     }
 
     logger.info("Updating device info...")
-    res = requests.patch(f"{url}/{conf['device_id']}", headers=headers, timeout=10)
+    res = requests.patch(f"{url}/{conf['device_id']}", headers=headers, timeout=30)
     if res.status_code != 200:
         logger.error("Update Failed: status_code=%d", res.status_code)
 
 
 def checkmode():
-    res = requests.get("https://www.cloudflare.com/cdn-cgi/trace", timeout=10)
+    res = requests.get("https://www.cloudflare.com/cdn-cgi/trace", timeout=30)
     warp_mode = re.search(r"warp=([\w]+)", res.text).group(1)
     return warp_mode
 
