@@ -98,7 +98,7 @@ def _run(config: dict, max_retries: int = 0):
                 logger.error(exc)
                 break  # fatal error
             if retry_num == max_retries:
-                logger.error(exc)
+                logger.info(exc)
         else:
             break  # no error
 
@@ -112,12 +112,16 @@ def run():
 
 
 def getquota():
+    num_error = 0
     while True:
         result = run()
         if result == 200:
             logger.info("Free 1GB added!")
         else:
-            logger.error("Failed to get free quota. Retrying in 60s...")
+            num_error += 1
+            if num_error > 10:
+                logger.error("Too many attempts. Stop requesting referral quota...")
+                break
         time.sleep(60)
 
 
