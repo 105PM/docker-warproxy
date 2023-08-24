@@ -1,7 +1,7 @@
 ARG ALPINE_VER=3.18
 
 ## BUILD WIREPROXY
-FROM golang:1.19-alpine${ALPINE_VER} AS builder
+FROM golang:1.20-alpine${ALPINE_VER} AS builder
 RUN \
     echo "**** build wireproxy ****" && \
     go install github.com/octeep/wireproxy/cmd/wireproxy@latest
