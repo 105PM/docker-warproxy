@@ -5,12 +5,7 @@ if [ "${WARP_PLUS}" != "true" ]; then
     exit 0
 fi
 
-if [ "${WARP_ENABLED}" != "true" ]; then
-    s6-svc -d .
-    exit 0
-else
-    s6-svwait -U /run/service/svc-wireproxy
-fi
+s6-svwait -U /run/service/svc-wireproxy
 
 command="warp+${WARP_PLUS_VERBOSE+ -v} run"
 

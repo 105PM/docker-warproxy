@@ -71,7 +71,6 @@ ENV \
     S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     PYTHONUNBUFFERED=1 \
     TZ=Asia/Seoul \
-    WARP_ENABLED=true \
     PROXY_ENABLED=true \
     PROXY_PORT=8008
 

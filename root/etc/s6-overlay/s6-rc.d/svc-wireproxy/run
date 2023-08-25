@@ -1,10 +1,5 @@
 #!/usr/bin/with-contenv bash
 
-if [ "${WARP_ENABLED}" != "true" ]; then
-    s6-svc -d .
-    exit 0
-fi
-
 command="/usr/local/bin/wireproxy -c /config/wireproxy.conf"
 
 # echo "*** executing => $command"
