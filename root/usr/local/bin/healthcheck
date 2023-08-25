@@ -2,18 +2,16 @@
 # from https://github.com/by275/docker-dpitunnel/blob/main/root/usr/local/bin/healthcheck
 
 TEST_URL="https://google.com"
+PROXY_URL="socks5://127.0.0.1:8080"
 
 if [ "${PROXY_ENABLED}" = "true" ]; then
-
     if [[ -n "${PROXY_USER:-}" ]] && [[ -n "${PROXY_PASS:-}" ]]; then
         PROXY_URL="http://${PROXY_USER}:${PROXY_PASS}@127.0.0.1:${PROXY_PORT}"
     else
         PROXY_URL="http://127.0.0.1:${PROXY_PORT}"
     fi
-
-    /usr/bin/curl --silent --fail -o /dev/null --proxy "${PROXY_URL}" "${TEST_URL}" || exit 1
-elif [ "${WARP_ENABLED}" == "true" ]; then
-    /usr/bin/curl --silent --fail -o /dev/null --proxy "socks5://127.0.0.1:8080" "${TEST_URL}" || exit 1
 fi
+
+/usr/bin/curl --silent --fail -o /dev/null --proxy "${PROXY_URL}" "${TEST_URL}" || exit 1
 
 exit 0

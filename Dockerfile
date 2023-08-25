@@ -1,15 +1,7 @@
-ARG ALPINE_VER=3.17
-
-## BUILD WIREPROXY
-FROM golang:1.19-alpine${ALPINE_VER} AS builder
-RUN \
-    echo "**** build wireproxy ****" && \
-    go install github.com/octeep/wireproxy/cmd/wireproxy@latest
+ARG ALPINE_VER=3.18
 
 ## ALPINE BASE WITH PYTHON3
-
 FROM ghcr.io/linuxserver/baseimage-alpine:${ALPINE_VER} AS base
-
 RUN \
     echo "**** install frolvlad/alpine-python3 ****" && \
     apk add --no-cache python3 && \
@@ -18,17 +10,45 @@ RUN \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
     if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip; fi && \
-    echo "**** install wgcf ****" && \
-    curl -fsSL https://git.io/wgcf.sh | bash && \
+    echo "**** install runtime packages ****" && \
+    apk add --no-cache \
+        grep \
+        py3-pycryptodome \
+        py3-requests \
+        py3-toml \
+        py3-uvloop \
+        sed \
+        && \
     echo "**** cleanup ****" && \
     rm -rf \
         /tmp/* \
         /root/.cache
 
+## INSTALL wgcf
+FROM base AS wgcf
+RUN \
+    echo "**** install wgcf ****" && \
+    curl -fsSL https://git.io/wgcf.sh | bash
+
+## INSTALL wireproxy
+FROM golang:1.20-alpine${ALPINE_VER} AS wproxy
+RUN \
+    echo "**** build wireproxy ****" && \
+    go install github.com/octeep/wireproxy/cmd/wireproxy@latest
+
+## INSTALL python-proxy
+FROM base AS pproxy
+RUN \
+    apk add --no-cache git && \
+    pip install --root /bar \
+        "pproxy[accelerated] @ git+https://github.com/by275/python-proxy"
+
 
 FROM base AS collector
 
-COPY --from=builder /go/bin/wireproxy /bar/usr/local/bin/wireproxy
+COPY --from=wgcf /usr/local/bin/wgcf /bar/usr/local/bin/wgcf
+COPY --from=wproxy /go/bin/wireproxy /bar/usr/local/bin/wireproxy
+COPY --from=pproxy /bar/ /bar/
 COPY root/ /bar/
 
 RUN echo "**** permissions ****" && \
@@ -44,34 +64,12 @@ FROM base
 LABEL maintainer="105PM"
 LABEL org.opencontainers.image.source https://github.com/105PM/docker-warproxy
 
-
-RUN \
-    echo "**** install python-proxy ****" && \
-    apk add --no-cache \
-        py3-pycryptodome \
-        py3-requests \
-        py3-toml \
-        py3-uvloop \
-        && \
-    pip3 install pproxy[accelerated] && \
-    echo "**** install others ****" && \
-    apk add --no-cache \
-        grep \
-        moreutils \
-        sed \
-        && \
-    echo "**** cleanup ****" && \
-    rm -rf \
-        /tmp/* \
-        /root/.cache
-
 COPY --from=collector /bar/ /
 
 ENV \
     S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     PYTHONUNBUFFERED=1 \
     TZ=Asia/Seoul \
-    WARP_ENABLED=true \
     PROXY_ENABLED=true \
     PROXY_PORT=8008
 
