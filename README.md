@@ -1,9 +1,9 @@
 # docker-WARProxy
 
-[wgcf](https://github.com/ViRb3/wgcf) + [Wireproxy](https://github.com/octeep/wireproxy) + [python-proxy](https://github.com/qwj/python-proxy) and some useful scripts
-
+[wgcf](https://github.com/ViRb3/wgcf) + [wireproxy](https://github.com/octeep/wireproxy) + [python-proxy](https://github.com/qwj/python-proxy) and some useful scripts
 
 ## Usage
+
 ```yaml
 version: "3"
 services:
@@ -24,15 +24,14 @@ services:
 ```
 
 ### To change license key
+
 If you have an existing Warp+ license key, edit `/config/wgcf-account.toml` and,  delete two files :  
 `/config/wgcf-profile.conf` and `/config/wireproxy.conf`  
 When you restart container, it will update your account info and re-generate conf files automatically.
 
-
 ## Direct connection to wireproxy
 
 As wireproxy is binding to ```0.0.0.0:8080```, you can directly access it independently to the proxy running at front by publishing your container port ```8080```. It is highly recommended exposing the port for internal use only.
-
 
 ## Environment variables
 
@@ -49,6 +48,6 @@ As wireproxy is binding to ```0.0.0.0:8080```, you can directly access it indepe
 | ```WARP_PLUS```  | set ```true``` to enable auto WARP+ quota script  | ```false``` |
 | ```WARP_PLUS_VERBOSE```  | set ```true``` to run auto WARP+ quota script in verbose mode   | ```false```  |
 
-
 ## Thanks
+
 * [by275 (docker-dpitunnel)](https://github.com/by275/docker-dpitunnel)
