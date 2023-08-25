@@ -6,19 +6,19 @@ WGCF_PROFILE="/config/wgcf-profile.conf"
 _wgcf() { wgcf --config "$WGCF_ACCOUNT" "$@"; }
 
 if [ ! -e "$WGCF_ACCOUNT" ]; then
-  echo "*** wgcf: registering a new account..."
+  echo "*** wgcf: Registering a new account..."
   _wgcf register --accept-tos${WGCF_DEVICE_NAME+ -n "$WGCF_DEVICE_NAME"}
 fi
 
-echo "*** wgcf: updating account info..."
+echo "*** wgcf: Updating account info..."
 _wgcf update${WGCF_DEVICE_NAME+ -n "$WGCF_DEVICE_NAME"}
 
 private_key=$(awk '/^private_key/{print $3}' "$WGCF_ACCOUNT")
 if [ ! -e "$WGCF_PROFILE" ]; then
-  echo "*** wgcf: generating a new wireguard profile..."
+  echo "*** wgcf: Generating a new wireguard profile..."
   _wgcf generate --profile "$WGCF_PROFILE"
 elif [ "${private_key//\'/}" != "$(awk '/^PrivateKey/{print $3}' "$WGCF_PROFILE")" ]; then
-  echo "*** wgcf: updating wireguard profile..."
+  echo "*** wgcf: Updating wireguard profile..."
   rm -f "$WGCF_PROFILE"
   _wgcf generate --profile "$WGCF_PROFILE"
 fi
