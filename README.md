@@ -47,6 +47,11 @@ As wireproxy is binding to ```0.0.0.0:8080```, you can directly access it indepe
 | ```WARP_PLUS```  | set ```true``` to enable auto WARP+ quota script  | ```false``` |
 | ```WARP_PLUS_VERBOSE```  | set ```true``` to run auto WARP+ quota script in verbose mode   | ```false```  |
 
+| ENV  | Description  | Default  |
+|---|---|---|
+| `WGCF_LICENSE_KEY` | native support by wgcf for changing license key | |
+| `WGCF_DEVICE_NAME` | directly passed to wgcf binary to update device name, e.g. `wgcf update ${WGCF_DEVICE_NAME}` |
+
 ## Thanks
 
 * [by275 (docker-dpitunnel)](https://github.com/by275/docker-dpitunnel)

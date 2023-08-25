@@ -1,21 +1,28 @@
 #!/usr/bin/with-contenv bash
 
-if [ ! -e "/config/wgcf-account.toml" ]; then
+WGCF_ACCOUNT="/config/wgcf-account.toml"
+WGCF_PROFILE="/config/wgcf-profile.conf"
+
+_wgcf() { wgcf --config "$WGCF_ACCOUNT" "$@"; }
+
+if [ ! -e "$WGCF_ACCOUNT" ]; then
   echo "*** wgcf: registering a new account..."
-  wgcf register --accept-tos --config /config/wgcf-account.toml
-else
-  echo "*** wgcf: updating account info..."
-  wgcf update --config /config/wgcf-account.toml
+  _wgcf register --accept-tos${WGCF_DEVICE_NAME+ -n "$WGCF_DEVICE_NAME"}
 fi
 
-if [ ! -e "/config/wgcf-profile.conf" ]; then
+echo "*** wgcf: updating account info..."
+_wgcf update${WGCF_DEVICE_NAME+ -n "$WGCF_DEVICE_NAME"}
+
+if [ ! -e "$WGCF_PROFILE" ]; then
   echo "*** wgcf: generating a new wireguard profile..."
-  wgcf generate --config /config/wgcf-account.toml --profile /config/wgcf-profile.conf
+  _wgcf generate --profile "$WGCF_PROFILE"
 fi
 
 if [ ! -e "/config/wireproxy.conf" ]; then
-  cp /config/wgcf-profile.conf /config/wireproxy.conf
-  echo -e "\n[Socks5]\nBindAddress = 0.0.0.0:8080" >> /config/wireproxy.conf
+  {
+    echo "WGConfig = $WGCF_PROFILE"
+    echo -e "[Socks5]\nBindAddress = 0.0.0.0:8080"
+  } > "/config/wireproxy.conf"
 fi
 
 [ "${WARP_PLUS}" = "true" ] || \
