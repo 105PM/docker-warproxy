@@ -13,7 +13,6 @@ RUN \
     echo "**** install runtime packages ****" && \
     apk add --no-cache \
         grep \
-        moreutils \
         py3-pycryptodome \
         py3-requests \
         py3-toml \
@@ -40,7 +39,9 @@ RUN \
 ## INSTALL python-proxy
 FROM base AS pproxy
 RUN \
-    pip install pproxy[accelerated] --root /bar
+    apk add --no-cache git && \
+    pip install --root /bar \
+        "pproxy[accelerated] @ git+https://github.com/by275/python-proxy"
 
 
 FROM base AS collector
