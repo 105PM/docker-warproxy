@@ -5,6 +5,12 @@ if [ "${WARP_PLUS}" != "true" ]; then
     exit 0
 fi
 
+if [ -z "${WGCF_LICENSE_KEY}" ]; then
+    echo "*** ERROR: env 'WGCF_LICENSE_KEY' should be set to run warp+"
+    s6-svc -d .
+    exit 0
+fi
+
 s6-svwait -U /run/service/svc-wireproxy
 
 command="warp+${WARP_PLUS_VERBOSE+ -v} run"
