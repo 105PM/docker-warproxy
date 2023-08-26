@@ -17,4 +17,5 @@ command="$command --auth ${PROXY_AUTHTIME:-0}${PROXY_VERBOSE+ -v}"
 echo "*** executing => $command"
 
 exec s6-setuidgid abc $command | \
-    grep -E -v --line-buffered "^http 127\.0\.0\.1:[[:digit:]]{5} -> (socks5 127\.0\.0\.1:8080 -> )?google\.com:443$"
+    sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' | \
+    grep -E -v --line-buffered "http 127\.0\.0\.1:[[:digit:]]{5} -> (socks5 127\.0\.0\.1:8080 -> )?google\.com:443$"
