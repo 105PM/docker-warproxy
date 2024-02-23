@@ -1,8 +1,7 @@
 #!/usr/bin/with-contenv bash
 
-command="/usr/local/bin/wireproxy -c /config/wireproxy.conf"
+command="/usr/local/bin/wireproxy -s -c /config/wireproxy.conf"
 
 # echo "*** executing => $command"
 exec s6-notifyoncheck -d -n 300 -w 10000 \
-    s6-setuidgid abc $command | \
-    grep -E -v --line-buffered "^DEBUG:"
+    s6-setuidgid abc $command

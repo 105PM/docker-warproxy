@@ -1,4 +1,4 @@
-ARG ALPINE_VER=3.18
+ARG ALPINE_VER=3.19
 
 ## ALPINE BASE WITH PYTHON3
 FROM ghcr.io/linuxserver/baseimage-alpine:${ALPINE_VER} AS base
@@ -6,6 +6,7 @@ RUN \
     echo "**** install frolvlad/alpine-python3 ****" && \
     apk add --no-cache python3 && \
     if [ ! -e /usr/bin/python ]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
+    rm /usr/lib/python*/EXTERNALLY-MANAGED && \
     python3 -m ensurepip && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
@@ -31,10 +32,10 @@ RUN \
     curl -fsSL https://git.io/wgcf.sh | bash
 
 ## INSTALL wireproxy
-FROM golang:1.20-alpine${ALPINE_VER} AS wproxy
+FROM golang:1.22-alpine${ALPINE_VER} AS wproxy
 RUN \
     echo "**** build wireproxy ****" && \
-    go install github.com/octeep/wireproxy/cmd/wireproxy@latest
+    go install github.com/pufferffish/wireproxy/cmd/wireproxy@latest
 
 ## INSTALL python-proxy
 FROM base AS pproxy
