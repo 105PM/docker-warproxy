@@ -7,7 +7,7 @@ fi
 
 s6-svwait -u /run/service/svc-wireproxy && sleep 1s
 
-command="pproxy -l http://0.0.0.0:${PROXY_PORT}"
+command="pproxy -l socks5+http://0.0.0.0:${PROXY_PORT}"
 if [[ -n ${PROXY_USER:-} ]] && [[ -n ${PROXY_PASS:-} ]]; then
     command="$command#${PROXY_USER}:${PROXY_PASS}"
 fi
