@@ -1,4 +1,4 @@
-ARG ALPINE_VER=3.19
+ARG ALPINE_VER=3.20
 
 ## ALPINE BASE WITH PYTHON3
 FROM ghcr.io/linuxserver/baseimage-alpine:${ALPINE_VER} AS base
@@ -32,7 +32,7 @@ RUN \
     curl -fsSL https://git.io/wgcf.sh | bash
 
 ## INSTALL wireproxy
-FROM golang:1.22-alpine${ALPINE_VER} AS wproxy
+FROM golang:1.23-alpine${ALPINE_VER} AS wproxy
 RUN \
     echo "**** build wireproxy ****" && \
     go install github.com/pufferffish/wireproxy/cmd/wireproxy@latest
