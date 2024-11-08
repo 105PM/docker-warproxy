@@ -30,9 +30,6 @@ if [ ! -e "/config/wireproxy.conf" ]; then
   } > "/config/wireproxy.conf"
 fi
 
-[ "${WARP_PLUS}" = "true" ] || \
-  rm -f /var/run/service/svc-warp+/notification-fd
-
 # permissions
 chown -R abc:abc \
   /config
