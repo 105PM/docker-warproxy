@@ -26,7 +26,7 @@ fi
 if [ ! -e "/config/wireproxy.conf" ]; then
   {
     echo "WGConfig = $WGCF_PROFILE"
-    echo -e "[Socks5]\nBindAddress = 0.0.0.0:8080"
+    echo -e "[Socks5]\nBindAddress = 127.0.0.1:8080"
   } > "/config/wireproxy.conf"
 fi
 

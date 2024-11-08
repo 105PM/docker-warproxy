@@ -29,10 +29,6 @@ Simply set env `WGCF_LICENSE_KEY` and re-create the existing container or the se
 
 Please also note that there is a maximum limit of 5 active devices linked to the same account at a given time.
 
-## Direct connection to wireproxy
-
-As wireproxy is binding to `socks5://0.0.0.0:8080`, you can directly access it independently to the proxy running at front by publishing your container port `8080`. It is highly recommended exposing the port for internal use only.
-
 ## Environment variables
 
 ### Basic
